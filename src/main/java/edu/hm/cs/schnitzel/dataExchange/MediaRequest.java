@@ -278,7 +278,7 @@ public class MediaRequest implements Request {
         //check if requested person is authorized first
         final Optional<Result> optionalResult = checkAuthorization();
         //present means user is authorized
-        if (optionalResult.isPresent()) {
+        if (!optionalResult.isPresent()) {
 
             //book or disc request
             final String requestedResource = getRequest()
