@@ -1,7 +1,7 @@
 # Code für 2. Pratkikumsaufgabe Software-Architektur Sommer 2017 
 
 Autoren: Nico Daßler, Philipp Konopac
-
+test
 Anwendung: https://shareit-schnitzel.herokuapp.com/
 
 ## Spezifikation der Rest API zum Anlegen von Exemplaren
