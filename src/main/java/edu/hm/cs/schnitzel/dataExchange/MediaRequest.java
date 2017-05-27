@@ -193,11 +193,10 @@ public class MediaRequest implements Request {
 
         } else {
             //1. There is no token:
-            //TODO: URL des Auth Servers einfuegen
             result = Optional.of(new MediaResult(HttpServletResponse.SC_BAD_REQUEST, "U didnt "
                     + "provide a token with your request. Please provide the "
                     + "token which you requested from the authorization server"
-                    + " (HIER URL EINFUEGEN) like this: "
+                    + " http://auth-schnitzel.herokuapp.com/ like this: "
                     + ".../shareit/...?token=YOUR TOKEN HERE.",
                     Collections.EMPTY_LIST));
         }
@@ -215,8 +214,7 @@ public class MediaRequest implements Request {
         Optional<Result> result = Optional.empty();
         try {
             //open connection to auth service
-            //TODO: insert correct URL here
-            final URL url = new URL("insert correct URL here");
+            final URL url = new URL("http://auth-schnitzel.herokuapp.com/");
             final HttpURLConnection httpURLConnection
                     = (HttpURLConnection) url.openConnection();
             //make it a output connection
