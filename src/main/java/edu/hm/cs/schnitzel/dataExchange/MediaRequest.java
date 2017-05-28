@@ -7,26 +7,33 @@
  */
 package edu.hm.cs.schnitzel.dataExchange;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import edu.hm.cs.schnitzel.entities.Book;
-import edu.hm.cs.schnitzel.entities.Disc;
-import edu.hm.cs.schnitzel.services.MediaService;
+import static org.junit.Assert.assertEquals;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.Socket;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
+import javax.net.ssl.HttpsURLConnection;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.json.JSONObject;
+
+import org.junit.Test;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import edu.hm.cs.schnitzel.entities.Book;
+import edu.hm.cs.schnitzel.entities.Disc;
+import edu.hm.cs.schnitzel.services.MediaService;
 
 /**
  *
@@ -177,14 +184,11 @@ public class MediaRequest implements Request {
      */
     private Optional<Result> checkAuthorization() {
         final Optional<Result> result;
-        final String requestURI = getRequest().getRequestURI();
+        final String token = getRequest().getParameter("token");
         //first check if token is there
-        if (requestURI.matches("[a-zA-Z/.:]*\\?token=[a-z]*")) {
-            //token
-            final String token
-                    = requestURI.substring(requestURI.indexOf("?") + 7);
+        if (token != null && !"".equals(token)) {
             //json string from token
-            final String json = "{token:" + token + "}";
+            final String json = "{\"token\": \"" + token + "\"}";
             //send request to auth service
             //Optional will be empty if everything is alright
             //2. There is a token but its not valid.
@@ -213,34 +217,45 @@ public class MediaRequest implements Request {
     private Optional<Result> sendRequestToAuthService(final String json) {
         Optional<Result> result = Optional.empty();
         try {
-            //open connection to auth service
-            final URL url = new URL("http://auth-schnitzel.herokuapp.com/");
-            final HttpURLConnection httpURLConnection
-                    = (HttpURLConnection) url.openConnection();
-            //make it a output connection
-            httpURLConnection.setDoOutput(true);
-            //set method to post
-            httpURLConnection.setRequestMethod("POST");
-            //set own properties (content type = json + content length =
-            //json string length)
-            httpURLConnection.setRequestProperty("Content-Type",
-                    "application/json");
-            httpURLConnection.setRequestProperty("Accept",
-            		"application/json");
-            httpURLConnection.setRequestProperty("Content-Length",
-                    String.valueOf(json.length()));
-            //the answer from the auth server
-            final String answer;
-            //write data (use try to automatically close resources)
-            try (final OutputStream outputStream
-                    = httpURLConnection.getOutputStream();
-                    final BufferedReader bufferedReader
-                    = new BufferedReader(new InputStreamReader(
-                            httpURLConnection.getInputStream()))) {
-                //write data
-                outputStream.write(json.getBytes());
-                answer = bufferedReader.lines().collect(Collectors.joining());
-            }
+        	
+        	
+        	// send request and receive answer
+        	final String answer = sendAndReceive("POST", "token", json);
+        	
+        	
+        	
+//            //open connection to auth service
+//            final URL url = new URL("https", "auth-schnitzel.herokuapp.com", "/shareit/auth/token");
+//            final HttpsURLConnection httpURLConnection
+//                    = (HttpsURLConnection) url.openConnection();
+//            //make it a output connection
+//            httpURLConnection.setDoOutput(true);
+//            //set method to post
+//            httpURLConnection.setRequestMethod("POST");
+//            //set own properties (content type = json + content length =
+//            //json string length)
+//            httpURLConnection.setRequestProperty("Content-Type",
+//                    "application/json");
+//            httpURLConnection.setRequestProperty("Accept",
+//            		"application/json");
+//            httpURLConnection.setRequestProperty("Content-Length",
+//                    String.valueOf(json.length()));
+//            //the answer from the auth server
+//            final String answer;
+//            //write data (use try to automatically close resources)
+//            try (final OutputStream outputStream
+//                    = httpURLConnection.getOutputStream();
+//                    final BufferedReader bufferedReader
+//                    = new BufferedReader(new InputStreamReader(
+//                            httpURLConnection.getInputStream()))) {
+//                //write data
+//                outputStream.write(json.getBytes());
+//                answer = bufferedReader.lines().collect(Collectors.joining());
+//            }
+            
+            
+            
+            
             //search for valid: true,
             final Pattern pattern = Pattern.compile("\"valid\":true");
             //if this  is true we have a valid token
@@ -267,6 +282,48 @@ public class MediaRequest implements Request {
         }
         //result will be empty if everything went alright
         return result;
+    }
+    
+
+    // Private Methods
+    private String sendAndReceive(String method, String token, String content) throws IOException {
+        String result = "";
+        try (final Socket socket = new Socket("auth-schnitzel.herokuapp.com", 80);
+                final PrintWriter printWriter = new PrintWriter(socket.getOutputStream());
+                final BufferedReader buffReader = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
+            // send header
+            sendHttpHeader(printWriter, method, token, content.length());
+            // send content
+            sendContent(printWriter, content);
+
+            // read answer
+            readUntilBody(buffReader);
+            // read content
+            result = buffReader.lines().collect(Collectors.joining());
+        }
+        return result;
+    }
+
+    private void sendHttpHeader(PrintWriter writer, String method, String token, int contentLength) {
+        writer.print(method + " /shareit/auth/" + token + " HTTP/1.0\r\n");
+        writer.print("Host: auth-schnitzel.herokuapp.com\r\n");
+        writer.print("Content-Type: application/json\r\n");
+        writer.print("Accept: application/json\r\n");
+        writer.print("Content-Length: " + contentLength + "\r\n");
+        writer.print("\r\n");
+        writer.flush();
+    }
+
+    private void readUntilBody(BufferedReader buffReader) throws IOException {
+        String line = buffReader.readLine();
+        while (line.length() > 0) {
+            line = buffReader.readLine();
+        }
+    }
+
+    private void sendContent(PrintWriter printWriter, String content) {
+        printWriter.write(content);
+        printWriter.flush();
     }
 
     //Methods Public
