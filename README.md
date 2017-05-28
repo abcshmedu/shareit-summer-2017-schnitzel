@@ -25,3 +25,15 @@ Die URIs sind gekürzt. Komplette URI ist zum Beispiel: _/shareit/media/books/co
 |/media/discs/copies|GET|---|Alle Kopien aller Discs als JSON-Repräsentation.|
 |/media/discs/copies|POST|Copy (discs)|Neues Exemplar angelegt + Erfolgsmeldung. Mögliche Fehler: Autor/Titel/Barcode fehlt. Ungültige Discspezifikation. Barcode existiert noch nicht (füge zunächst die Disc hinzu).|
 |/media/discs/copies/barcode|PUT|Copy (discs)|Exemplar verändert + Erfolgsmeldung. Mögliche Fehler: Exemplar nicht gefunden (Barcode existiert nicht). Barcode soll modifiziert werden (URI Barcode weicht von Body Barcode ab). Autor/Titel(/Barcode) fehlen.|
+
+###Autorisierung (login):
+URL: https://auth-schnitzel.herokuapp.com/shareit/auth/
+Methode: POST
+Header: Content-Type: application/json; Accept: application/json
+Content: {"name": "Max", "password": "password"}
+
+###Validation:
+URL: https://auth-schnitzel.herokuapp.com/shareit/auth/token
+Methode: POST
+Header: Content-Type: application/json; Accept: application/json
+Content: {"token": "<token>"} -> <token> ist das vom login zurückgegebenen token

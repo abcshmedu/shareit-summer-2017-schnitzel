@@ -179,10 +179,10 @@ public class MediaRequest implements Request {
         final Optional<Result> result;
         final String requestURI = getRequest().getRequestURI();
         //first check if token is there
-        if (requestURI.matches("[a-zA-Z/]*?token=[a-z]*")) {
+        if (requestURI.matches("[a-zA-Z/.:]*\\?token=[a-z]*")) {
             //token
             final String token
-                    = requestURI.substring(requestURI.indexOf("?") + 1);
+                    = requestURI.substring(requestURI.indexOf("?") + 7);
             //json string from token
             final String json = "{token:" + token + "}";
             //send request to auth service
@@ -225,6 +225,8 @@ public class MediaRequest implements Request {
             //json string length)
             httpURLConnection.setRequestProperty("Content-Type",
                     "application/json");
+            httpURLConnection.setRequestProperty("Accept",
+            		"application/json");
             httpURLConnection.setRequestProperty("Content-Length",
                     String.valueOf(json.length()));
             //the answer from the auth server
@@ -240,7 +242,7 @@ public class MediaRequest implements Request {
                 answer = bufferedReader.lines().collect(Collectors.joining());
             }
             //search for valid: true,
-            final Pattern pattern = Pattern.compile("valid: true,");
+            final Pattern pattern = Pattern.compile("\"valid\":true");
             //if this  is true we have a valid token
             if (!pattern.matcher(answer).find()) {
                 result = Optional.of(new MediaResult(
