@@ -37,3 +37,20 @@ URL: https://auth-schnitzel.herokuapp.com/shareit/auth/token
 Methode: POST
 Header: Content-Type: application/json; Accept: application/json
 Content: {"token": "<token>"} -> <token> ist das vom login zurückgegebenen token
+
+###Buch hinzufügen (per Postman):
+URL: https://shareit-schnitzel.herokuapp.com/shareit/media/books?token=<token>  -> token ist das zuvor per Hand angefragte token
+Methode: POST
+Header: Content-Type: application/json; Accept: application/json
+Content: {
+	"title": "titel1",
+	"author": "autor",
+	"isbn": 129343,
+	"year": 2000
+}
+
+###Bücher anzeigen (per Postman):
+URL: https://shareit-schnitzel.herokuapp.com/shareit/media/books?token=<token>  -> token ist das zuvor per Hand angefragte token
+Methode: GET
+Header: Content-Type: application/json; Accept: application/json
+
