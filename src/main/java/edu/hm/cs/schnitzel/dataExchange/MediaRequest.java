@@ -99,7 +99,7 @@ public class MediaRequest implements Request {
                     //update a book which will be specified with a book object
                     final Book book = mapper.readValue(getRequest()
                             .getInputStream(), Book.class);
-                    book.setIsbn(splittedURI[INDEX_ISBN]);
+                    book.setIsbn(splittedURI[INDEX_ISBN].replaceAll("-", ""));
                     result = mediaService.updateBook(book);
                 }
                 break;
@@ -286,7 +286,18 @@ public class MediaRequest implements Request {
     
 
     // Private Methods
-    private String sendAndReceive(String method, String token, String content) throws IOException {
+    
+    /**
+     * Send Request and receive answer.
+     * 
+     * @param method is the HTTP method
+     * @param token is the "/token" extension
+     * @param content is the content to be sent
+     * 
+     * @return the content of the answer
+     * @throws IOException
+     */
+    private final String sendAndReceive(final String method, final String token, final String content) throws IOException {
         String result = "";
         try (final Socket socket = new Socket("auth-schnitzel.herokuapp.com", 80);
                 final PrintWriter printWriter = new PrintWriter(socket.getOutputStream());
@@ -304,7 +315,15 @@ public class MediaRequest implements Request {
         return result;
     }
 
-    private void sendHttpHeader(PrintWriter writer, String method, String token, int contentLength) {
+    /**
+     * Send the HTTP header.
+     * 
+     * @param writer is the writer
+     * @param token is the "/token" extension
+     * @param method is the HTTP method
+     * @param contentLength is the length of the content
+     */
+    private final void sendHttpHeader(final PrintWriter writer, final String method, final String token, final int contentLength) {
         writer.print(method + " /shareit/auth/" + token + " HTTP/1.0\r\n");
         writer.print("Host: auth-schnitzel.herokuapp.com\r\n");
         writer.print("Content-Type: application/json\r\n");
@@ -314,14 +333,26 @@ public class MediaRequest implements Request {
         writer.flush();
     }
 
-    private void readUntilBody(BufferedReader buffReader) throws IOException {
+    /**
+     * Read body.
+     * 
+     * @param buffReader is the reader
+     * @throws IOException
+     */
+    private final void readUntilBody(final BufferedReader buffReader) throws IOException {
         String line = buffReader.readLine();
         while (line.length() > 0) {
             line = buffReader.readLine();
         }
     }
 
-    private void sendContent(PrintWriter printWriter, String content) {
+    /**
+     * Send content.
+     * 
+     * @param printWriter is the sender
+     * @param content is the conent
+     */
+    private final void sendContent(final PrintWriter printWriter, final String content) {
         printWriter.write(content);
         printWriter.flush();
     }
