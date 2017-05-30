@@ -7,33 +7,26 @@
  */
 package edu.hm.cs.schnitzel.dataExchange;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.Socket;
-import java.net.URL;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import javax.net.ssl.HttpsURLConnection;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.junit.Test;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.inject.Inject;
 
 import edu.hm.cs.schnitzel.entities.Book;
 import edu.hm.cs.schnitzel.entities.Disc;
-import edu.hm.cs.schnitzel.services.MediaService;
+import edu.hm.cs.schnitzel.services.Service;
 
 /**
  *
@@ -48,6 +41,8 @@ public class MediaRequest implements Request {
     //Object Variables
     //--------------------------------------------------------------------------
     private final HttpServletRequest request;
+    @Inject 
+    private Service service;
     //Constructors
     //--------------------------------------------------------------------------
 
@@ -74,7 +69,6 @@ public class MediaRequest implements Request {
         //the result object which will be returned
         final Result result;
         //the underlying service that will actually execute the desired action
-        final MediaService mediaService = new MediaService();
         //the jackson mapper to create book objects
         final ObjectMapper mapper = new ObjectMapper();
         final String[] splittedURI = getRequest()
@@ -84,10 +78,10 @@ public class MediaRequest implements Request {
                 //check if isbn is in url
                 if (splittedURI.length == INDEX_ISBN + 1) {
                     //request only for one book
-                    result = mediaService.getBook(splittedURI[INDEX_ISBN]);
+                    result = getService().getBook(splittedURI[INDEX_ISBN]);
                 } else {
                     //request for all books
-                    result = mediaService.getBooks();
+                    result = getService().getBooks();
                 }
                 break;
             case "PUT":
@@ -100,12 +94,12 @@ public class MediaRequest implements Request {
                     final Book book = mapper.readValue(getRequest()
                             .getInputStream(), Book.class);
                     book.setIsbn(splittedURI[INDEX_ISBN].replaceAll("-", ""));
-                    result = mediaService.updateBook(book);
+                    result = getService().updateBook(book);
                 }
                 break;
             case "POST":
                 //add a book which will be specified with a book object
-                result = mediaService.addBook(mapper.readValue(getRequest()
+                result = getService().addBook(mapper.readValue(getRequest()
                         .getInputStream(), Book.class));
                 break;
             default:
@@ -130,7 +124,6 @@ public class MediaRequest implements Request {
         //the result object which will be returned
         final Result result;
         //the underlying service that will actually execute the desired action
-        final MediaService mediaService = new MediaService();
         //the jackson mapper to create book objects
         final ObjectMapper mapper = new ObjectMapper();
         final String[] splittedURI = getRequest()
@@ -140,10 +133,10 @@ public class MediaRequest implements Request {
                 //check for isbn in uri
                 if (splittedURI.length == INDEX_ISBN + 1) {
                     //return just the requested book
-                    result = mediaService.getDisc(splittedURI[INDEX_ISBN]);
+                    result = getService().getDisc(splittedURI[INDEX_ISBN]);
                 } else {
                     //return all discs
-                    result = mediaService.getDiscs();
+                    result = getService().getDiscs();
                 }
                 break;
             case "PUT":
@@ -156,12 +149,12 @@ public class MediaRequest implements Request {
                             .getInputStream(), Disc.class);
                     disc.setBarcode(splittedURI[INDEX_ISBN]);
                     //update a disc which will be specified with a disc object
-                    result = mediaService.updateDisc(disc);
+                    result = getService().updateDisc(disc);
                 }
                 break;
             case "POST":
                 //add a disc which will be specified with a disc object
-                result = mediaService.addDisc(mapper.readValue(getRequest()
+                result = getService().addDisc(mapper.readValue(getRequest()
                         .getInputStream(), Disc.class));
                 break;
             default:
@@ -409,4 +402,7 @@ public class MediaRequest implements Request {
         return request;
     }
 
+    private Service getService() {
+		return service;
+	}
 }

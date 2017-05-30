@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.google.inject.Inject;
+
 import edu.hm.cs.schnitzel.daos.DatabaseAccessObject;
 import edu.hm.cs.schnitzel.daos.PseudoDatabaseAccessObject;
 import edu.hm.cs.schnitzel.dataExchange.MediaResult;
