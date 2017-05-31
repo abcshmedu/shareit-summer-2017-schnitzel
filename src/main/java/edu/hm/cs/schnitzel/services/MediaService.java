@@ -40,7 +40,8 @@ public class MediaService implements Service {
 
     //Object Variables
     //--------------------------------------------------------------------------
-    private final DatabaseAccessObject dao;
+    @Inject
+    private DatabaseAccessObject dao;
 
     //Constructors
     //--------------------------------------------------------------------------
@@ -50,7 +51,6 @@ public class MediaService implements Service {
      * Creates an instance of the DAO
      */
     public MediaService() {
-        dao = new PseudoDatabaseAccessObject();
     }
 
     //Methods Public

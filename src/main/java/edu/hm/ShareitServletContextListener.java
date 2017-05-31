@@ -5,6 +5,8 @@ import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceServletContextListener;
 import com.google.inject.servlet.ServletModule;
 
+import edu.hm.cs.schnitzel.daos.DatabaseAccessObject;
+import edu.hm.cs.schnitzel.daos.PseudoDatabaseAccessObject;
 import edu.hm.cs.schnitzel.services.MediaService;
 import edu.hm.cs.schnitzel.services.Service;
 
@@ -16,6 +18,7 @@ public class ShareitServletContextListener extends GuiceServletContextListener {
 		@Override
 		protected void configureServlets() {
 			bind(Service.class).to(MediaService.class);
+			bind(DatabaseAccessObject.class).to(PseudoDatabaseAccessObject.class);
 		}
 	});
 
