@@ -40,7 +40,7 @@ public class MediaRequest implements Request {
     private static final int INDEX_ISBN = 4;
     //Object Variables
     //--------------------------------------------------------------------------
-    private final HttpServletRequest request;
+    private HttpServletRequest request;
     @Inject 
     private Service service;
     //Constructors
@@ -54,6 +54,8 @@ public class MediaRequest implements Request {
     public MediaRequest(final HttpServletRequest requestInput) {
         this.request = requestInput;
     }
+    
+    public MediaRequest() {}
 
     //Methods Private
     //--------------------------------------------------------------------------
@@ -399,10 +401,14 @@ public class MediaRequest implements Request {
      *
      * @return Request object.
      */
-    private HttpServletRequest getRequest() {
+	private HttpServletRequest getRequest() {
         return request;
     }
 
+	public void setRequest(HttpServletRequest request) {
+		this.request = request;
+	}
+	
     private Service getService() {
 		return service;
 	}

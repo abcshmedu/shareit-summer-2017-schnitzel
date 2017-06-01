@@ -7,36 +7,46 @@
  */
 package edu.hm.cs.schnitzel.servlets;
 
-import edu.hm.cs.schnitzel.dataExchange.MediaRequest;
-import edu.hm.cs.schnitzel.dataExchange.Result;
 import java.io.IOException;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
+import edu.hm.cs.schnitzel.dataExchange.Request;
+import edu.hm.cs.schnitzel.dataExchange.Result;
+
 /**
  *
  * @author nicfel
  */
+@Singleton
 public class MediaServlet extends HttpServlet {
-
+	
+	@Inject
+	private Request request;
+	
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request servlet request
+     * @param httpRequest servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    final void processRequest(final HttpServletRequest request,
+    final void processRequest(final HttpServletRequest httpRequest,
             final HttpServletResponse response)
             throws ServletException, IOException {
 
         response.setContentType("application/json; charset=utf-8");
         response.setStatus(HttpServletResponse.SC_OK);
-        final Result result = new MediaRequest(request)
+        getRequest().setRequest(httpRequest);
+        final Result result = getRequest()
                 .processRequest();
         final String content = result.getJsonString();
         response.setContentLength(content.length());
@@ -99,4 +109,7 @@ public class MediaServlet extends HttpServlet {
         return "Short description";
     } // </editor-fold>
 
+    private Request getRequest() {
+		return request;
+	}
 }
