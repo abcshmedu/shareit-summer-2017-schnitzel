@@ -7,16 +7,26 @@
  */
 package edu.hm.cs.schnitzel.entities;
 
+import java.io.Serializable;
 import java.util.Objects;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
 /**
  * Represents Books. This class will be able to be parsed from + to json.
  *
  * @author N.Dassler, P.Konopac
  */
-public class Book extends Resource {
+@Entity
+public class Book extends Resource implements Serializable {
 
-    //Object Variables
+	/**
+	 * Serialization ID
+	 */
+	private static final long serialVersionUID = 9159786818650782540L;
+	
+	//Object Variables
     //--------------------------------------------------------------------------
     /**
      * The author of the book.
@@ -25,6 +35,7 @@ public class Book extends Resource {
     /**
      * Identifies the book.
      */
+    @Id
     private String isbn;
     /**
      * The release year of the book.

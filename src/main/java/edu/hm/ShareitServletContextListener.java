@@ -7,7 +7,7 @@ import com.google.inject.servlet.GuiceServletContextListener;
 import com.google.inject.servlet.ServletModule;
 
 import edu.hm.cs.schnitzel.daos.DatabaseAccessObject;
-import edu.hm.cs.schnitzel.daos.PseudoDatabaseAccessObject;
+import edu.hm.cs.schnitzel.daos.HibernateDatabaseAccessObject;
 import edu.hm.cs.schnitzel.dataExchange.MediaRequest;
 import edu.hm.cs.schnitzel.dataExchange.Request;
 import edu.hm.cs.schnitzel.services.MediaService;
@@ -23,7 +23,7 @@ public class ShareitServletContextListener extends GuiceServletContextListener {
 		protected void configure() {
 			bind(Request.class).to(MediaRequest.class);
 			bind(Service.class).to(MediaService.class);
-			bind(DatabaseAccessObject.class).to(PseudoDatabaseAccessObject.class);
+			bind(DatabaseAccessObject.class).to(HibernateDatabaseAccessObject.class);
 		}
 	}, new ServletModule() {
 		@Override

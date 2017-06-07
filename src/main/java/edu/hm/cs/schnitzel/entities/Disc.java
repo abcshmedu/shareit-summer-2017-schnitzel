@@ -7,7 +7,11 @@
  */
 package edu.hm.cs.schnitzel.entities;
 
+import java.io.Serializable;
 import java.util.Objects;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
 /**
  * Represents Discs. This class will be able to be parsed from + to json with
@@ -15,13 +19,20 @@ import java.util.Objects;
  *
  * @author N.Dassler, P.Konopac
  */
-public class Disc extends Resource {
+@Entity
+public class Disc extends Resource implements Serializable {
 
-    //Object Variables
+    /**
+	 * Serialization ID
+	 */
+	private static final long serialVersionUID = 6163663220123674598L;
+	
+	//Object Variables
     //--------------------------------------------------------------------------
     /**
      * Identifies as disc (like a isbn for books).
      */
+	@Id
     private String barcode;
     /**
      * The release year of the disc.
