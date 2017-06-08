@@ -1,8 +1,11 @@
 package edu.hm;
 
+import org.hibernate.tool.hbm2ddl.SingleLineSqlCommandExtractor;
+
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.Singleton;
 import com.google.inject.servlet.GuiceServletContextListener;
 import com.google.inject.servlet.ServletModule;
 
@@ -23,7 +26,7 @@ public class ShareitServletContextListener extends GuiceServletContextListener {
 		protected void configure() {
 			bind(Request.class).to(MediaRequest.class);
 			bind(Service.class).to(MediaService.class);
-			bind(DatabaseAccessObject.class).to(HibernateDatabaseAccessObject.class);
+			bind(DatabaseAccessObject.class).to(HibernateDatabaseAccessObject.class).in(Singleton.class);;
 		}
 	}, new ServletModule() {
 		@Override
