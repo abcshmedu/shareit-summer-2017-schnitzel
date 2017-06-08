@@ -10,38 +10,43 @@ package edu.hm.cs.schnitzel.daos;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.hm.cs.schnitzel.database.PseudoDatabase;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.query.Query;
+
 import edu.hm.cs.schnitzel.entities.Book;
 import edu.hm.cs.schnitzel.entities.Disc;
-import java.util.HashSet;
 
 /**
- * PseudoDatabaseAccessObject.
+ * HibernateDatabaseAccessObject.
  *
- * This implementation of DatabaseAccessObject uses PseudoDatabase as a database
+ * This implementation of DatabaseAccessObject uses Hibernate
  *
  * @author konopac
  */
 public class HibernateDatabaseAccessObject implements DatabaseAccessObject {
 
-    //Constant Variables
-    //--------------------------------------------------------------------------
-    private static final PseudoDatabase DATABASE
-            = new PseudoDatabase(new HashSet<Book>(), new HashSet<>());
-
-    //Methods Public Static
-    //--------------------------------------------------------------------------
-    /**
-     * Clear the database. Mostly used for testing
-     */
-    public static final void clear() {
-        DATABASE.getBooks().clear();
-        DATABASE.getDiscs().clear();
-    }
-
+	//Fields
+	//--------------------------------------------------------------------------
+	private final SessionFactory sessionFactory;
+	
     //Methods Private
     //--------------------------------------------------------------------------
     /**
+     * Create a new Hibernate SessionFactory.
+     * 
+     * @return the SessionFactory
+     */
+    private SessionFactory createSessionFactory() {
+    	return new Configuration().configure().buildSessionFactory();
+    }
+	
+	/**
      * Remove a book.
      *
      * @param isbn is the isbn number of the book to remove
@@ -63,30 +68,86 @@ public class HibernateDatabaseAccessObject implements DatabaseAccessObject {
         return true;
     }
 
+    /**
+     * Insert an object to the database.
+     * 
+     * @param toAdd is  the object to be added
+     * @return true, if it was successfull
+     */
+    private boolean insert(final Object toAdd) {
+    	boolean done = true;
+    	try (final Session entityManager = getSessionFactory().getCurrentSession()) {
+    		final Transaction transaction = entityManager.beginTransaction();
+    		entityManager.persist(toAdd);
+    		transaction.commit();
+    	} catch (final Exception exception) {
+    		done = false;
+    		exception.printStackTrace();
+    	}
+    	return done;
+    }
+
+    // Constructors
+    //--------------------------------------------------------------------------
+    /**
+     * Default Constructor.
+     * Will create a new SessionFactory
+     */
+    public HibernateDatabaseAccessObject() {
+    	this.sessionFactory = createSessionFactory();
+    }
+    
     //Methods Public
     //--------------------------------------------------------------------------
     @Override
     public final boolean addBook(final Book toAdd) {
-        return DATABASE.getBooks().add(toAdd);
+    	return insert(toAdd);
     }
+
 
     @Override
     public final boolean addDisc(final Disc toAdd) {
-        return DATABASE.getDiscs().add(toAdd);
+        return insert(toAdd);
     }
 
     @Override
     public final List<Book> getBooks() {
-        final List<Book> result = new ArrayList<>();
-        result.addAll(DATABASE.getBooks());
-        return result;
+    	List<Book> books = new ArrayList<>();
+    	try (final Session entityManager = getSessionFactory().getCurrentSession()) {
+    		final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+    		final CriteriaQuery<Book> criteriaQuery = builder.createQuery(Book.class);
+    		
+    		criteriaQuery.from(Book.class);
+//    		final Root<Book> root = criteriaQuery.from(Book.class);
+//    		query.where(builder.equal(root.get("firstName"), "Neville"));
+    		final Query<Book> query = entityManager.createQuery(criteriaQuery);
+    		books = query.getResultList();
+
+    		
+    		
+//    		final String queryString = "FROM Book";
+//    		final Query<Book> query = entityManager.createQuery(queryString);
+//    		books = query.list();
+    	} catch (final Exception exception) {
+    		exception.printStackTrace();
+    	}
+    	return books;
     }
 
     @Override
     public final List<Disc> getDiscs() {
-        final List<Disc> result = new ArrayList<>();
-        result.addAll(DATABASE.getDiscs());
-        return result;
+    	List<Disc> discs = new ArrayList<>();
+    	try (final Session entityManager = getSessionFactory().getCurrentSession()) {
+    		final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+    		final CriteriaQuery<Disc> criteriaQuery = builder.createQuery(Disc.class);
+    		
+    		criteriaQuery.from(Disc.class);
+    		final Query<Disc> query = entityManager.createQuery(criteriaQuery);
+    		discs = query.getResultList();
+    	} catch (final Exception exception) {
+    		exception.printStackTrace();
+    	}
+    	return discs;
     }
 
     @Override
@@ -105,6 +166,7 @@ public class HibernateDatabaseAccessObject implements DatabaseAccessObject {
 
     @Override
     public final Book getBook(final String isbn) {
+    	final String queryString = "FROM Book WHERE firstName LIKE '%evil%'";
         Book result = null;
         for (final Book book : DATABASE.getBooks()) {
             if (book.getIsbn().equals(isbn)) {
@@ -124,4 +186,16 @@ public class HibernateDatabaseAccessObject implements DatabaseAccessObject {
         }
         return result;
     }
+    
+
+    //Private Getters
+    //--------------------------------------------------------------------------
+    /**
+     * Getter for sessionFactory.
+     * 
+     * @return the sessionFactory
+     */
+    private SessionFactory getSessionFactory() {
+		return sessionFactory;
+	}
 }
