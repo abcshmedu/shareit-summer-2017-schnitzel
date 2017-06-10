@@ -6,16 +6,14 @@
 package edu.hm.cs.schnitzel.dataExchange;
 
 import com.google.inject.Guice;
-import com.google.inject.Inject;
 import com.google.inject.Injector;
-import edu.hm.cs.schnitzel.services.Service;
-import javax.servlet.http.HttpServletRequest;
-import org.junit.After;
-import org.junit.AfterClass;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collections;
+import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -42,9 +40,46 @@ public class MediaRequestTest {
         mediaRequest = INJECTOR.getInstance(Request.class);
     }
 
+    @Test
+    public void uriDoesntContainBooksOrDiscs() {
+        final String expected = new MediaResult(404,
+                "Not found. The requested resource does not exist. Make sure "
+                + "to use the correct URI pattern. The pattern is as "
+                + "follows: /shareit/media/[books or discs]"
+                + "/{isbn or barcode}",
+                Collections.emptyList()).getJsonString();
+        final String have = getMediaRequest()
+                .processRequest("GET", "/shareit/media/ape/1234", null, null)
+                .getJsonString();
+        assertEquals(expected, have);
+    }
+
+    @Test
+    public void correctGetRequestForOneBook() {
+        final String expected = new MediaResult(200,
+                "OK.",
+                Collections.emptyList()).getJsonString();
+        final String have = getMediaRequest()
+                .processRequest("GET", "/shareit/media/books/1234", null, null)
+                .getJsonString();
+        System.out.println(have);
+        assertEquals(expected, have);
+    }
+
+    @Test
+    public void correctGetRequestForAllBooks() {
+        final String expected = new MediaResult(201,
+                "OK.",
+                Collections.emptyList()).getJsonString();
+        final String have = getMediaRequest()
+                .processRequest("GET", "/shareit/media/books", null, null)
+                .getJsonString();
+        System.out.println(have);
+        assertEquals(expected, have);
+    }
+
     private Request getMediaRequest() {
         return mediaRequest;
     }
-    
-    
+
 }

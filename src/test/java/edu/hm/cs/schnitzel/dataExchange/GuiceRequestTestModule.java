@@ -8,6 +8,7 @@ import java.util.Collections;
 import static org.mockito.ArgumentMatchers.any;
 import org.mockito.Mockito;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * A guice module for testing the MediaRequest class.
@@ -31,6 +32,9 @@ public class GuiceRequestTestModule extends AbstractModule {
     final Service provideService() {
         final Service service = mock(Service.class);
         //behavior of mocked Service here:
+        when(service.getBook(any()))
+                .thenReturn(new MediaResult(200, "OK.", Collections.emptyList()));
+        when(service.getBooks()).thenReturn(new MediaResult(201, "OK.", Collections.emptyList()));
         //example
         //Mockito.when(service.addBook(any(Book.class))).thenReturn(new MediaResult(0, "test", Collections.emptyList()));
         return service;
