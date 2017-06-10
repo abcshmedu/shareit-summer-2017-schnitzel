@@ -18,7 +18,6 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -334,9 +333,10 @@ public class MediaRequest implements Request {
         Result result;
         //check if requested person is authorized first
         final Optional<Result> optionalResult = checkAuthorization();
+        //TODO: enable authorization again
         //present means user is authorized
 //        if (!optionalResult.isPresent()) {
-        if (optionalResult.isPresent()) {
+        //if (optionalResult.isPresent()) {
 
             //book or disc request
             final String requestedResource = getRequestURI()
@@ -349,9 +349,10 @@ public class MediaRequest implements Request {
                 } else {
                     result = new MediaResult(HttpServletResponse.SC_NOT_FOUND,
                             "Not found. The requested resource does not exist."
-                            + "Make sure to use the correct URI pattern."
-                            + "The pattern is as follows:"
-                            + "/shareit/media/books or discs/{isbn or barcode]",
+                            + " Make sure to use the correct URI "
+                            + "pattern. The pattern is as follows: "
+                            + "/shareit/media/[books or discs]/"
+                            + "{isbn or barcode}",
                             Collections.emptyList());
                 }
             } catch (IOException exception) {
@@ -359,13 +360,13 @@ public class MediaRequest implements Request {
                         HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                         "A server error occured. This is not your fault. "
                         + "You can calm down again. "
-                                + "Info fuer den Chefinformatiker:"
+                        + "Info fuer den Chefinformatiker:"
                         + "Ein Fehler is beim parsen des Requests aufgetreten.",
                         Collections.emptyList());
             }
-        } else {
-            result = optionalResult.get();
-        }
+//        } else {
+//            result = optionalResult.get();
+//        }
         return result;
     }
     //Getter + Setter (also Private)

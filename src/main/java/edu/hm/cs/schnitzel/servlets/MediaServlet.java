@@ -26,10 +26,10 @@ import edu.hm.cs.schnitzel.dataExchange.Result;
  */
 @Singleton
 public class MediaServlet extends HttpServlet {
-	
-	@Inject
-	private Request request;
-	
+
+    @Inject
+    private Request request;
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -45,9 +45,12 @@ public class MediaServlet extends HttpServlet {
 
         response.setContentType("application/json; charset=utf-8");
         response.setStatus(HttpServletResponse.SC_OK);
-        getRequest().setRequest(httpRequest);
         final Result result = getRequest()
-                .processRequest();
+                .processRequest(httpRequest.getMethod(),
+                        httpRequest.getRequestURI(),
+                        //this might be null if there is no parameter "token"
+                        httpRequest.getParameter("token"),
+                        httpRequest.getInputStream());
         final String content = result.getJsonString();
         response.setContentLength(content.length());
         response.getWriter().append(content).close();
@@ -110,6 +113,6 @@ public class MediaServlet extends HttpServlet {
     } // </editor-fold>
 
     private Request getRequest() {
-		return request;
-	}
+        return request;
+    }
 }

@@ -7,6 +7,7 @@
  */
 package edu.hm.cs.schnitzel.dataExchange;
 
+import java.io.InputStream;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -20,9 +21,13 @@ public interface Request {
      * get the desired output which is specified by the URI and the type of
      * request.
      *
+     * @param method The request method (e.g. POST, PUT, GET).
+     * @param requestURI The request URI (URL).
+     * @param token The 
+     * @param inputStream
      * @return A result object containing.
      */
-    Result processRequest();
+    Result processRequest(String method, String requestURI, String token, InputStream inputStream);
     
-    void setRequest(HttpServletRequest httpRequest);
+    
 }

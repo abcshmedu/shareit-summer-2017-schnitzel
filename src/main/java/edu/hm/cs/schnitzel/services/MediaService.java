@@ -14,7 +14,6 @@ import java.util.List;
 import com.google.inject.Inject;
 
 import edu.hm.cs.schnitzel.daos.DatabaseAccessObject;
-import edu.hm.cs.schnitzel.daos.PseudoDatabaseAccessObject;
 import edu.hm.cs.schnitzel.dataExchange.MediaResult;
 import edu.hm.cs.schnitzel.dataExchange.Result;
 import edu.hm.cs.schnitzel.entities.Book;
