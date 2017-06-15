@@ -4,6 +4,10 @@
 .settings/
 .idea/
 target/
+shareit-db.log
+shareit-db.properties
+shareit-db.script
+/log/CrunchifyTest.log
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
