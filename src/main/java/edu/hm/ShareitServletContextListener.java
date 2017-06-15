@@ -1,8 +1,15 @@
 package edu.hm;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.Optional;
+
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.servlet.GuiceServletContextListener;
 import com.google.inject.servlet.ServletModule;
@@ -25,10 +32,26 @@ public class ShareitServletContextListener extends GuiceServletContextListener {
 		@Override
 		protected void configure() {
 			bind(Request.class).to(MediaRequest.class);
+			// To disable authentification, remove the next line and activete the mocking code below
 			bind(Authorization.class).to(SocketAuthorization.class);
 			bind(Service.class).to(MediaService.class);
 			bind(DatabaseAccessObject.class).to(HibernateDatabaseAccessObject.class).in(Singleton.class);;
 		}
+		
+	    /**
+	     * This provides injections for "Authorization" with a mocked Authorization object.
+	     *
+	     * @return The mocked authorization object.
+	     */
+//	    @Provides
+//	    final Authorization provideAuthorization() {
+//	    	final Authorization authorization = mock(Authorization.class);
+//	    	//behavior of mocked Authorization here:
+//	    	when(authorization.checkAuthorization(any()))
+//	    	.thenReturn(Optional.empty());
+//	    	//example
+//	    	return authorization;
+//	    }
 	}, new ServletModule() {
 		@Override
 		protected void configureServlets() {

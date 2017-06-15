@@ -133,6 +133,7 @@ public class HibernateDatabaseAccessObject implements DatabaseAccessObject {
     public final List<Book> getBooks() {
         List<Book> books = new ArrayList<>();
         try (final Session entityManager = getSessionFactory().getCurrentSession()) {
+        	entityManager.beginTransaction();
             final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
             final CriteriaQuery<Book> criteriaQuery = builder.createQuery(Book.class);
 
@@ -155,7 +156,8 @@ public class HibernateDatabaseAccessObject implements DatabaseAccessObject {
     public final List<Disc> getDiscs() {
         List<Disc> discs = new ArrayList<>();
         try (final Session entityManager = getSessionFactory().getCurrentSession()) {
-            final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        	entityManager.beginTransaction();
+        	final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
             final CriteriaQuery<Disc> criteriaQuery = builder.createQuery(Disc.class);
 
             criteriaQuery.from(Disc.class);

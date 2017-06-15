@@ -5,15 +5,15 @@
  */
 package edu.hm.cs.schnitzel.dataExchange;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collections;
-import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
+
+import java.util.Collections;
+
 import org.junit.Before;
 import org.junit.Test;
+
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 /**
  *

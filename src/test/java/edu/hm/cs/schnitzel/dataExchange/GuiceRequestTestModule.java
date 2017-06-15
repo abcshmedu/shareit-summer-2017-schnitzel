@@ -5,6 +5,8 @@ import com.google.inject.Provides;
 import edu.hm.cs.schnitzel.entities.Book;
 import edu.hm.cs.schnitzel.services.Service;
 import java.util.Collections;
+import java.util.Optional;
+
 import static org.mockito.ArgumentMatchers.any;
 import org.mockito.Mockito;
 import static org.mockito.Mockito.mock;
@@ -38,5 +40,20 @@ public class GuiceRequestTestModule extends AbstractModule {
         //example
         //Mockito.when(service.addBook(any(Book.class))).thenReturn(new MediaResult(0, "test", Collections.emptyList()));
         return service;
+    }
+
+    /**
+     * This provides injections for "Authorization" with a mocked Authorization object.
+     *
+     * @return The mocked authorization object.
+     */
+    @Provides
+    final Authorization provideAuthorization() {
+    	final Authorization authorization = mock(Authorization.class);
+    	//behavior of mocked Authorization here:
+    	when(authorization.checkAuthorization(any()))
+    	.thenReturn(Optional.empty());
+    	//example
+    	return authorization;
     }
 }

@@ -6,7 +6,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package restTestClasses;
+package edu.hm.cs.schnitzel;
 
 import static org.junit.Assert.assertEquals;
 
@@ -16,21 +16,34 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.stream.Collectors;
+
+import org.eclipse.jetty.util.component.LifeCycle;
+import org.eclipse.jetty.util.component.LifeCycle.Listener;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+
 import edu.hm.JettyStarter;
+import edu.hm.cs.schnitzel.daos.HibernateDatabaseAccessObject;
 import edu.hm.cs.schnitzel.daos.PseudoDatabaseAccessObject;
+import edu.hm.cs.schnitzel.dataExchange.GuiceRequestTestModule;
 import edu.hm.cs.schnitzel.database.PseudoDatabase;
 
 /**
+ * THIS TEST CLASS WILL NOT WORK
+ * new Tests in GuiceReqtestTest
  *
  * @author nicfel
  */
 public class RestTest {
 
+	private static final Injector INJECTOR = Guice.createInjector(new GuiceServletTestModule(), new GuiceRestTestModule());
+	
     private JettyStarter jettyStarter;
 
     public RestTest() {
