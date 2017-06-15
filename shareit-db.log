@@ -1,0 +1,8 @@
+/*C1*/SET SCHEMA SYSTEM_LOBS
+INSERT INTO BLOCKS VALUES(0,2147483647,0)
+COMMIT
+/*C2*/SET SCHEMA PUBLIC
+drop table Book if exists
+drop table Disc if exists
+create table Book (isbn varchar(255) not null, author varchar(255), year integer not null, primary key (isbn))
+create table Disc (barcode varchar(255) not null, director varchar(255), fsk integer not null, writer varchar(255), year integer not null, primary key (barcode))

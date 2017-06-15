@@ -43,7 +43,7 @@ public class HibernateDatabaseAccessObject implements DatabaseAccessObject {
      * @return the SessionFactory
      */
     private SessionFactory createSessionFactory() {
-        return new Configuration().configure().buildSessionFactory();
+        return new Configuration().configure("/edu/hm/cs/schnitzel/daos/hibernate.cfg.xml").buildSessionFactory();
     }
 
 //    /**

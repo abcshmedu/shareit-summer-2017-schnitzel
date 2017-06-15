@@ -1,7 +1,5 @@
 package edu.hm;
 
-import org.hibernate.tool.hbm2ddl.SingleLineSqlCommandExtractor;
-
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -11,8 +9,10 @@ import com.google.inject.servlet.ServletModule;
 
 import edu.hm.cs.schnitzel.daos.DatabaseAccessObject;
 import edu.hm.cs.schnitzel.daos.HibernateDatabaseAccessObject;
+import edu.hm.cs.schnitzel.dataExchange.Authorization;
 import edu.hm.cs.schnitzel.dataExchange.MediaRequest;
 import edu.hm.cs.schnitzel.dataExchange.Request;
+import edu.hm.cs.schnitzel.dataExchange.SocketAuthorization;
 import edu.hm.cs.schnitzel.services.MediaService;
 import edu.hm.cs.schnitzel.services.Service;
 import edu.hm.cs.schnitzel.servlets.MediaServlet;
@@ -25,6 +25,7 @@ public class ShareitServletContextListener extends GuiceServletContextListener {
 		@Override
 		protected void configure() {
 			bind(Request.class).to(MediaRequest.class);
+			bind(Authorization.class).to(SocketAuthorization.class);
 			bind(Service.class).to(MediaService.class);
 			bind(DatabaseAccessObject.class).to(HibernateDatabaseAccessObject.class).in(Singleton.class);;
 		}
